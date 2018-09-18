@@ -1,0 +1,4 @@
+services_with_degradation.iml
+.gradle/
+.idea/
+build/
