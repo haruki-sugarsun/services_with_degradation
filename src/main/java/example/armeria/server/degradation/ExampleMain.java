@@ -3,13 +3,12 @@ package example.armeria.server.degradation;
 import com.linecorp.armeria.common.SessionProtocol;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
-import example.armeria.server.annotated.ExceptionHandlerService;
-import example.armeria.server.annotated.InjectionService;
-import example.armeria.server.annotated.MessageConverterService;
-import example.armeria.server.annotated.PathPatternService;
+import io.netty.util.concurrent.SingleThreadEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class ExampleMain {
     private static final Logger logger = LoggerFactory.getLogger(ExampleMain.class);
@@ -30,7 +29,11 @@ public class ExampleMain {
         Server ignorableBackendServer = ignorableBackendServer();
         Server cacheableBackendServer = cacheableBackendServer();
 
+        // Start the servers.
         importantBackendServer.start();
+        ignorableBackendServer.start();
+        cacheableBackendServer.start();
+
         mainHttpServer.start();
     }
 
@@ -47,12 +50,14 @@ public class ExampleMain {
     }
 
     private static Server cacheableBackendServer() {
-        return null;
+        return new ServerBuilder().port(IGNORABLE_SERVICE_PORT, SessionProtocol.HTTP)
+                .annotatedService("/", new IgnorableService())
+                .build();
     }
 
     private static Server ignorableBackendServer() {
-        return null;
+        return new ServerBuilder().port(CACHEABLE_SERVICE_PORT, SessionProtocol.HTTP)
+                .annotatedService("/", new CacheableService())
+                .build();
     }
-
-
 }

@@ -55,7 +55,7 @@ public class MainService {
         if (importantResult.isSuccess()) {
             // Service is happy. We have at least something to show.
         } else {
-            // Service should show an error.
+            // Service should show an error. and we do not care about other backends.
             logger.error("An important backend has error. {}", importantResult.getValue());
             return "Sorry. We have a service issue. Nothing to show.";
         }
@@ -88,12 +88,11 @@ public class MainService {
         // Cacheable part.
         if (cacheableResult.isSuccess()) {
             sb.append("Cacheable Backend returns " + cacheableResult.getValue().get() + "\n");
-        } else if (cachedDataForCacheableBackend.isPresent()){
-            sb.append("Cacheable Backend returns nothing. But we can show old data, which is " + cachedDataForCacheableBackend + ".\n");
+        } else if (cachedDataForCacheableBackend.isPresent()) {
+            sb.append("Cacheable Backend returns nothing. But we can show old data, which is " + cachedDataForCacheableBackend.get() + ".\n");
         } else {
             sb.append("Cacheable Backend returns nothing. And we do not have cached one.\n");
         }
-
 
         sb.append("\n\n(important:" + (importantResult.isSuccess() ? "OK" : "failed")
                 + ", ignorable:" + (ignorableResult.isSuccess() ? "OK" : "failed")
